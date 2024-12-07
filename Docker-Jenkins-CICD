@@ -1,0 +1,52 @@
+# Devops - Project -2 
+Jenkins Pipeline Docker Build and Push | Jenkins CI CD Pipeline | Declarative Pipeline in Jenkins
+
+This project focuses on pushing docker image to docker hub using jenkins pipeline(jenkins push docker image to docker hub or jenkins pipeline to deploy docker image or build and push docker image jenkins). This project shows how to build jenkins ci cd pipeline(jenkins pipeline docker build and push or jenkins pipeline to create docker image and push to dockerhub). This project is about declarative pipeline in jenkins(declarative pipeline jenkins tutorial or declarative pipeline jenkins github).
+
+Here we take two servers:
+1.Amazon EC2 - whcih acts as master - Install Jenkins
+2.Azure Virtual Machine - which acts as agent - will install docker.io
+
+First we need to update both the servers: sudo apt update
+Then we will install Java on master machine : sudo apt install openjdk-17-jre, on both the servers
+Install jenkins on master :
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian/jenkins.io-2023.key
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+
+Now need to install docker on docker-compose on Azure VM (agent) because the build will happen on the agent server:sudo apt-get install docker.io,sudo apt-get install docker-compose
+Now I will add my username to Docker : sudo usermod -aG docker $USER: access to my current user on Docker, sudo init 6
+
+Jenkins on master will need port 8080 > Ec2> SG > 8080
+
+On Azure VM > inbound rule > 8080 > 8000(agent)
+
+Copy Public Ip of Master and :8080 > Jenkins works
+
+JENKINS: USING JENKINS SETUP AGENT FOR DISTRIBUTED BUILD:
+Jenkins> setup agent : Dev-Agent > path:Azure Vm root fdirectory (/home/vAdmin)> Launch Method: Launch Agents via SSH > Host: public Ip of Azure VM > Credentials : Use Jenkis  credential provider:Username: vAdmin, Password:, ID: Dev-Agent
+Non-verifying > Plugin: environment-injector > save & retart
+Go to Dockerhub > Acc Settngs > Security > New Access Token > save aand exit
+Manage jenkins> Global Credenatils > give dockerhub username > Password: Token ID > ID: DockerHub > save & EXIT
+
+Inside Jenkins - create a job > Pipeline > Build TRiggers: Github hook trigger poll SCM 
+Go to github> webhooks > add webhooks > payload url - insert jenkins url/github-webhooks/ - send me everything - add webhook
+Go toProject > config > pipeline > write the peipeline script > Using docker-compose file in github will pull the image back to the dockerhub and it will deploy on the agnet > 
+Go to Guthub projevct> open docker-compose> username on dockerhub > modfy image file > commit > build now 
+We could see the Docker image on the DockerHub
+Change something in the webpage code in Githu > jenkins will automatically start the build through github webhook > initiatd the pipeline > try to open webpage using Azure VM public Ip and port 8000
+
+The WEBPAGE WORKS!!!!!
+
+Github > chnage the todo-file > coommit > the Jenkins will automtaically trigger the build > copy paste the Jenkins file in Github repo foldeer> go to Jenkins project > pipeline definition > pipleine from SCM > SCM: git> provide the Github repo url >
+branch: main > save
+Commit the Jenkinsfile into Github > it will trigger changes in the Jenkisn pipeline> 
+
+By this way we can create the jenkins cicd pieplien and configure it to build the image into dockerhub and then agian pull the image from dockerhub and deploy it on agent server> configure automatic triggers into Jenkins!!
+
+
+CICD PIPELINE COMPLETED!!!
